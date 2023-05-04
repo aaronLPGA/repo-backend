@@ -1,0 +1,18 @@
+https://service-backend-nm5t.onrender.com
+
+
+/api/Cliente
+/api/Vehiculo
+
+
+Get /api/clientes
+Get /api/clientes/:id
+Post /api/clientes
+Post /api/clientes/login
+Path /api/clientes/:id
+
+
+Get /api/vehiculos
+Post/api/vehiculos
+Path /api/vehiculos/:id
+delete /api/vehiculos/:id

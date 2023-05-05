@@ -26,12 +26,12 @@ unique: true,
 hora: {
  type:String,
  trim:true,
+},
+plaza: {
+type:String,
+trim:true,
+enum: ['A1', 'A2', 'B3', 'B4', 'B5'],
 }
-// plaza: {
-// type:String,
-// trim:true,
-// enum: ['A1', 'A2', 'B3', 'B4', 'B5'],
-// }
 });
 
 

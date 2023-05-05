@@ -25,6 +25,12 @@ const clienteSchema = new mongoose.Schema({
     require:true
   },
   
+  plaza:{
+    type:String,
+    enum:["A1","A2","A3","A4","B1","B2","B3"],
+    trim:true,
+    unique:true
+  },
   vehiculos: [
     {
       type: mongoose.Types.ObjectId,

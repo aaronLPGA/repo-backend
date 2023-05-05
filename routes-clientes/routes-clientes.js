@@ -48,13 +48,117 @@ router.get("/:id", async (req, res, next) => {
   });
 });
 
-// * Crear nuevo docente
-router.post("/", async (req, res, next) => {
-  const { nombre, email, password, dni } = req.body;
-  let existeCliente;
+router.get("/:id/plaza",async(req,res,next) => {
+
+  const idCliente = req.params.id;
+  let plaza;
   try {
-    existeCliente = await Cliente.findOne({
-      email: email,
+    plaza = await Cliente.findById(idCliente.plaza);
+    console.log(plaza)
+  } catch (err) {
+    const error = new Error(
+      "Ha habido algún error. No se han podido recuperar los datos"
+    );
+    error.code = 500;
+    return next(error);
+  }
+  if (!plaza) {
+    const error = new Error(
+      "No se ha podido encontrar una plaza con el id proporcionado"
+    );
+    error.code = 404;
+    return next(error);
+  }
+  res.json({
+    mensaje: "Cliente encontrado",
+    plaza: plaza,
+  });
+});
+
+
+
+// // * Crear nuevo docente
+// router.post("/", async (req, res, next) => {
+//   const { nombre, email, password, dni, plaza } = req.body;
+//   let existeCliente;
+//   try {
+//     existeCliente = await Cliente.findOne({
+//       email: email
+      
+//     });
+//   } catch (err) {
+//     const error = new Error(err);
+//     error.code = 500;
+//     return next(error);
+//   }
+
+//   if (existeCliente) {
+//     const error = new Error("Ya existe un cliente con ese e-mail.");
+//     error.code = 401; // ! 401: fallo de autenticación
+//     return next(error);
+//     // ! ATENCIÓN: FIJARSE EN DONDE EMPIEZA Y TERMINA ESTE ELSE
+//   } else {
+//     // ? Encriptación de password mediante bcrypt y salt
+//     let hashedPassword;
+//     try {
+//       hashedPassword = await bcrypt.hash(password, 12); // ? Método que produce la encriptación
+//     } catch (error) {
+//       const err = new Error(
+//         "No se ha podido crear el docente. Inténtelo de nuevo"
+//       );
+//       err.code = 500;
+//       console.log(error.message);
+//       return next(err);
+//     }
+
+//     const nuevoCliente = new Cliente({
+//       nombre,
+//       email,
+//       password: hashedPassword, // ? La nueva password será la encriptada
+//       vehiculos: [],
+//       dni,
+//       plaza
+//     });
+
+//     try {
+//       await nuevoCliente.save();
+//     } catch (error) {
+//       const err = new Error("No se han podido guardar los datos");
+//       err.code = 500;
+//       return next(err);
+//     }
+//     // ? Código para la creación del token
+//     try {
+//       token = jwt.sign(
+//         {
+//           userId: nuevoCliente.id,
+//           email: nuevoCliente.email,
+//         },
+//         "clave_supermegasecreta",
+//         {
+//           expiresIn: "1h",
+//         }
+//       );
+//     } catch (error) {
+//       const err = new Error("El proceso de alta ha fallado");
+//       err.code = 500;
+//       return next(err);
+//     }
+//     res.status(201).json({
+//       userId: nuevoCliente.id,
+//       email: nuevoCliente.email,
+//       token: token,
+//     });
+//   }
+// });
+
+router.post("/", async (req, res, next) => {
+  const { nombre, email, password, dni, plaza } = req.body;
+  let existePlaza;
+  try {
+    existePlaza = await Cliente.findOne({
+      plaza: plaza
+      
     });
   } catch (err) {
     const error = new Error(err);
@@ -62,8 +166,8 @@ router.post("/", async (req, res, next) => {
     return next(error);
   }
 
-  if (existeCliente) {
-    const error = new Error("Ya existe un cliente con ese e-mail.");
+  if (existePlaza) {
+    const error = new Error("Ya existe un cliente con esa plaza.");
     error.code = 401; // ! 401: fallo de autenticación
     return next(error);
     // ! ATENCIÓN: FIJARSE EN DONDE EMPIEZA Y TERMINA ESTE ELSE
@@ -86,7 +190,8 @@ router.post("/", async (req, res, next) => {
       email,
       password: hashedPassword, // ? La nueva password será la encriptada
       vehiculos: [],
-      dni
+      dni,
+      plaza
     });
 
     try {
@@ -115,7 +220,7 @@ router.post("/", async (req, res, next) => {
     }
     res.status(201).json({
       userId: nuevoCliente.id,
-      email: nuevoCliente.email,
+      plaza: nuevoCliente.plaza,
       token: token,
     });
   }
@@ -163,7 +268,7 @@ router.post("/", async (req, res, next) => {
 
 // * Crear nuevo cliente (relacionándolo con Vehiculo)
 router.post('/', async (req, res, next) => {
-	const { nombre, email, password, dni } = req.body;
+	const { nombre, email, password, dni,plaza } = req.body;
 	let existeCliente;
 	try {
 		existeCliente = await Cliente.findOne({
@@ -185,6 +290,7 @@ router.post('/', async (req, res, next) => {
 			email,
 			password,
 			dni,
+      plaza,
 			vehiculos: [],
 		});
 		try {

@@ -55,7 +55,7 @@ router.get("/buscar/:busca", async (req, res, next) => {
 
 // * Crear un nuevo curso (y el docente relacionado) y guardarlo en Atlas
 router.post("/", async (req, res, next) => {
-  // ? Primero creamos el curso y lo guardamos en Atlas
+  // ? Primero creamos el coche y lo guardamos en Atlas
   const { coche,cliente,nombre, matricula, hora, plaza } = req.body;
   const nuevoCoche = new Vehiculo({
     // Nuevo documento basado en el Model Curso.
@@ -67,7 +67,7 @@ router.post("/", async (req, res, next) => {
     plaza,
     
   });
-  // ? Localizamos al docente que se corresponde con el que hemos recibido en el request
+  // ? Localizamos al cliente que se corresponde con el que hemos recibido en el request
   let clienteBusca;
   try {
     clienteBusca = await Cliente.findById(req.body.cliente);
@@ -129,7 +129,7 @@ router.patch("/:id", async (req, res, next) => {
   // ? Si existe el curso y el usuario se ha verificado
   try {
     cocheBuscar = await Cliente.findById(idCoche).populate("cliente");
-    // ? Bloque si queremos modificar el docente que imparte el curso
+    // ? Bloque si queremos modificar el cliente que tiene el coche 
     if (req.body.cliente) {
       cocheBuscar.cliente.vehiculos.pull(cocheBuscar); // * Elimina el curso del docente al que se le va a quitar
       await cocheBuscar.cliente.save(); // * Guarda dicho docente
@@ -151,7 +151,7 @@ router.patch("/:id", async (req, res, next) => {
     return next(error);
   }
   res.json({
-    message: "Curso modificado",
+    message: "Coche modificado",
     coche: cocheBuscar,
   });
 });
@@ -209,7 +209,7 @@ router.get("/", async (req, res, next) => {
   });
 });
 
-// * Recuperar un curso por su Id
+// * Recuperar un coche por su Id
 router.get("/:id", async (req, res, next) => {
   const idCoche = req.params.id;
   let coche;
@@ -273,7 +273,7 @@ router.get("/:id", async (req, res, next) => {
 // 	});
 // });
 
-// * Eliminar un curso en base a su id (y el docente relacionado)
+// * Eliminar un coche en base a su id (y el cliente relacionado)
 router.delete("/:id", async (req, res, next) => {
   const idUsuario = req.params.id;
   let coche;
@@ -305,7 +305,7 @@ router.delete("/:id", async (req, res, next) => {
 
   // ? Si existe el curso y el usuario se ha verificado
   try {
-    // ? (1) Eliminar curso de la colección
+    // ? (1) Eliminar coche de la colección
     await coche.deleteOne();
     // ? (2) En el campo docente del documento curso estará la lista con todos lo cursos de dicho docente. Con el método pull() le decimos a mongoose que elimine el curso también de esa lista.
     coche.cliente.vehiculos.pull(coche);

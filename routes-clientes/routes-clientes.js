@@ -191,7 +191,7 @@ router.post("/", async (req, res, next) => {
       password: hashedPassword, // ? La nueva password será la encriptada
       vehiculos: [],
       dni,
-      plaza
+      plaza,
     });
 
     try {
@@ -389,7 +389,7 @@ router.delete("/:id", async (req, res, next) => {
 
 // * Login de clientes
 router.post("/login", async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password,plaza } = req.body;
   let clienteExiste;
   try {
     clienteExiste = await Cliente.findOne({
@@ -431,11 +431,19 @@ router.post("/login", async (req, res, next) => {
         userId: clienteExiste.id,
         email: clienteExiste.email,
       },
-      "clave_supermegasecreta",
+      "secret_password",
       {
         expiresIn: "1h",
       }
     );
+    
+   if(!clienteExiste.plaza.includes(plaza)){
+    const error = new Error(
+      "No se ha tiene la plaza correcta. Credenciales erróneos"
+    );
+    error.code = 401; // !401: Fallo de autenticación
+    return next(error);
+   }
   } catch (error) {
     const err = new Error("El proceso de login ha fallado");
     err.code = 500;
